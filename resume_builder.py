@@ -304,9 +304,11 @@ def fetch_job_from_linkedin(job_id: str, username: str, password: str,
                              li_at: str = "", jsessionid: str = "") -> JobDetails:
     """Authenticate to LinkedIn and return a JobDetails object."""
     from linkedin_api import Linkedin
+    from requests.cookies import cookiejar_from_dict
 
     if li_at and jsessionid:
-        client = Linkedin("", "", cookies={"li_at": li_at, "JSESSIONID": jsessionid})
+        cookie_jar = cookiejar_from_dict({"li_at": li_at, "JSESSIONID": jsessionid})
+        client = Linkedin("", "", cookies=cookie_jar)
     else:
         client = Linkedin(username, password)
 
