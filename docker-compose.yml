@@ -1,0 +1,44 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: resume_mongo
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: resume_service
+    volumes:
+      - mongo_data:/data/db
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: resume_ollama
+    restart: unless-stopped
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  app:
+    build:
+      context: ..
+      dockerfile: resume_service/Dockerfile
+    container_name: resume_service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    environment:
+      # Overrides for the compose network — take precedence over .env
+      MONGO_URI: mongodb://mongo:27017
+      OLLAMA_BASE_URL: http://ollama:11434
+    depends_on:
+      - mongo
+      - ollama
+    volumes:
+      - ../output:/app/output
+
+volumes:
+  mongo_data:
+  ollama_data:

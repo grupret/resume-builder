@@ -1,0 +1,37 @@
+{# ─────────────────────────────────────────────────────────────────────────── #}
+{# Jinja2 template — renders a candidate's resume as structured plain text.    #}
+{# The rendered output is embedded in the LLM prompt so the model can tailor   #}
+{# it to the target job description.                                            #}
+{# ─────────────────────────────────────────────────────────────────────────── #}
+
+NAME: {{ user.name }}
+CURRENT TITLE: {{ user.current_title }}
+EXPERIENCE: {{ user.years_of_experience }} years
+EMAIL: {{ user.email }}
+PHONE: {{ user.phone }}
+LINKEDIN: {{ user.linkedin_url }}
+{% if user.github_url %}GITHUB: {{ user.github_url }}{% endif %}
+
+--- PROFESSIONAL SUMMARY ---
+{{ user.summary }}
+
+--- TECHNICAL SKILLS ---
+{% for skill in user.skills -%}
+{{ skill.category }}: {{ skill.values }}
+{% endfor %}
+
+--- PROFESSIONAL EXPERIENCE ---
+{% for exp in user.experience %}
+{{ exp.role }} | {{ exp.company }} | {{ exp.dates }}
+{% for bullet in exp.bullets -%}
+* {{ bullet }}
+{% endfor %}
+{%- if exp.summary %}
+  Summary: {{ exp.summary }}
+{% endif %}
+{% endfor %}
+
+--- CERTIFICATIONS ---
+{% for cert in user.certifications -%}
+* {{ cert }}
+{% endfor %}
